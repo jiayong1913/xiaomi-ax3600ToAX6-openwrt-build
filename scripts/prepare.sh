@@ -6,7 +6,7 @@
  # @FilePath: /xiaomi-ax3600-openwrt-build/scripts/prepare.sh
 ###
 
-git clone https://github.com/zhkong/openwrt-ipq807x.git --single-branch openwrt --depth 1
+git clone -b main_nss https://github.com/zhkong/openwrt-ipq807x.git --single-branch openwrt --depth 1
 cd openwrt
 
 # 更新 Feeds
