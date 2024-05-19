@@ -8,7 +8,7 @@ on:
 #  watch:
 #    types: started
 #---add by ljy end --
-on:
+
   repository_dispatch:
   workflow_dispatch:
 
