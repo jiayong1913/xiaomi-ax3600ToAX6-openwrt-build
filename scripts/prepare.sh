@@ -61,4 +61,4 @@ make defconfig
 
 # # 编译固件
 # make download -j$(nproc)
-# make -j$(nproc) || make -j1 V=s
+# make -j$(nproc) || make -j8 V=s
