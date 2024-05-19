@@ -88,6 +88,7 @@ jobs:
         rm -rf ./artifact/
         mkdir -p ./artifact/
         mv openwrt/bin/targets/qualcommax/ipq807x/*squashfs-factory.* ./artifact/
+        mv openwrt/bin/targets/qualcommax/ipq807x/*squashfs-sysupgrade.* ./artifact/     
         mv openwrt/bin/targets/qualcommax/ipq807x/config.buildinfo ./artifact/
         cd ./artifact/
         ls -Ahl
