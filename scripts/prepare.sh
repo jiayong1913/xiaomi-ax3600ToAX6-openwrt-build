@@ -56,8 +56,8 @@ bash ../scripts/preset-terminal-tools.sh
 # config file
 #cp ../config/xiaomi_ax3600-stock.config .config
 #config file for ax6-stock configfile
-cp ../config/ax6-stock.config
-make defconfig
+cp ../config/AX6-AX6NSS.config .config
+#make defconfig
 
 # # 编译固件
 # make download -j$(nproc)
