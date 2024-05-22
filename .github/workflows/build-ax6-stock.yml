@@ -101,8 +101,7 @@ jobs:
 
     - name: Create release
       id: create_release
-    #uses: actions/checkout@v3
-    uses: ncipollo/release-action@v1.5.0
+      uses: ncipollo/release-action@v1.12.0
       with:
         name: ax6-stock-${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
         allowUpdates: true
