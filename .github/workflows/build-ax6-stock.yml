@@ -101,9 +101,10 @@ jobs:
 
     - name: Create release
       id: create_release
-      uses: ncipollo/release-action@v1.12.0
+    #uses: actions/checkout@v3
+    uses: ncipollo/release-action@v1.5.0
       with:
-        name: ax3600-${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
+        name: ax6-stock-${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
         allowUpdates: true
         tag: ${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
         replacesArtifacts: true
