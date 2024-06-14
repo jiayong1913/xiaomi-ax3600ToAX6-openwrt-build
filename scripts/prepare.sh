@@ -6,8 +6,9 @@
  # @FilePath: /xiaomi-ax3600-openwrt-build/scripts/prepare.sh
 ###
 
+git clone -b xiaomi-ax3600-stock-layout https://github.com/jiayong1913/ZKopenwrt-ipq807x.git --single-branch openwrt --depth 1
+#git clone -b main_nss https://github.com/jiayong1913/ZKopenwrt-ipq807x.git --single-branch openwrt --depth 1
 
-git clone -b main_nss https://github.com/jiayong1913/ZKopenwrt-ipq807x.git --single-branch openwrt --depth 1
 #git clone -b xiaomi-ax3600-stock-layout https://github.com/jiayong1913/ZKopenwrt-ipq807x.git --single-branch openwrt --depth 1
 #git clone -b ax6-stock-layout https://github.com/jiayong1913/openwrt-ipq807x.git --single-branch openwrt --depth 1
 cd openwrt
