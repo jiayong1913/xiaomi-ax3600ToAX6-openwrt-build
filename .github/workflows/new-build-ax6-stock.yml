@@ -1,0 +1,94 @@
+name: ax6-stock OpenWRT Build
+
+on:
+#  schedule:
+#    - cron: 5 6 * * 0
+#---add by ljy--
+#  push:
+#  watch:
+#    types: started
+#---add by ljy end --
+
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        df -h
+        
+        
+    - name: prepare
+      run: |
+        bash ./scripts/prepare.sh
+    - name: Get Architecture
+      working-directory: ${{ github.workspace }}/openwrt
+      run: |
+        LAST_COMMIT_HASH=$(curl -s "https://api.github.com/repos/AgustinLorenzo/openwrt/commits/main_nss" | grep -m 1 '"sha":' | cut -d '"' -f 4 | cut -c 1-7)
+        echo "LAST_COMMIT_HASH=${LAST_COMMIT_HASH}" >> $GITHUB_ENV
+        tag_name=$(date +%Y%m%d-%H%M)
+        echo "tag_name=${tag_name}" >>$GITHUB_ENV
+    - name: Make Download
+      run: |
+        cd openwrt
+        make download -j50
+    - name: Compile Openwrt
+      id: compileopenwrt
+      continue-on-error: true
+      run: |
+        cd openwrt
+        #echo | make kernel_oldconfig -j$(($(nproc) + 1)) 
+        #IGNORE_ERRORS=1 make -j$(($(nproc) + 1))
+        IGNORE_ERRORS=1 make -j8 V=sc
+        echo $?
+    - name: If Error
+      if: steps.compileopenwrt.outcome == 'failure'
+      run: |
+        cat openwrt/.config
+        echo '================================================================'
+        cd openwrt && make -j1 V=s
+    - name: Print Disk Space After
+      run: df -h
+    - name: Organize files
+      id: organize
+      run: |
+        rm -rf ./artifact/
+        mkdir -p ./artifact/
+        mv openwrt/bin/targets/qualcommax/ipq807x/*squashfs-factory.* ./artifact/
+        mv openwrt/bin/targets/qualcommax/ipq807x/*squashfs-sysupgrade.* ./artifact/     
+        mv openwrt/bin/targets/qualcommax/ipq807x/config.buildinfo ./artifact/
+        cd ./artifact/
+        ls -Ahl
+    - name: Upload artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: OpenWRT_${{ env.tag_name }}
+        path: ./artifact/
+
+    - name: Create release
+      id: create_release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        name: ax6-stock-${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
+        allowUpdates: true
+        tag: ${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
+        replacesArtifacts: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: ./artifact/*
