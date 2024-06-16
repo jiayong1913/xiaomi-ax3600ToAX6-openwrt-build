@@ -1,11 +1,16 @@
-name: AX3600 OpenWRT Build
+name: ax6-stock OpenWRT Build
 
 on:
 #  schedule:
 #    - cron: 5 6 * * 0
-  push:
-  watch:
-    types: started
+#---add by ljy--
+#  push:
+#  watch:
+#    types: started
+#---add by ljy end --
+
+  repository_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -67,7 +72,8 @@ jobs:
       run: |
         cd openwrt
         #echo | make kernel_oldconfig -j$(($(nproc) + 1)) 
-        IGNORE_ERRORS=1 make -j$(($(nproc) + 1))
+        #IGNORE_ERRORS=1 make -j$(($(nproc) + 1))
+        IGNORE_ERRORS=1 make -j8 V=sc
         echo $?
     - name: If Error
       if: steps.compileopenwrt.outcome == 'failure'
@@ -83,6 +89,7 @@ jobs:
         rm -rf ./artifact/
         mkdir -p ./artifact/
         mv openwrt/bin/targets/qualcommax/ipq807x/*squashfs-factory.* ./artifact/
+        mv openwrt/bin/targets/qualcommax/ipq807x/*squashfs-sysupgrade.* ./artifact/     
         mv openwrt/bin/targets/qualcommax/ipq807x/config.buildinfo ./artifact/
         cd ./artifact/
         ls -Ahl
@@ -96,7 +103,7 @@ jobs:
       id: create_release
       uses: ncipollo/release-action@v1.12.0
       with:
-        name: ax3600-${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
+        name: ax6-stock-${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
         allowUpdates: true
         tag: ${{ env.tag_name }}-${{ env.LAST_COMMIT_HASH }}
         replacesArtifacts: true
