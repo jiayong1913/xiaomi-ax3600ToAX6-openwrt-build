@@ -6,7 +6,8 @@
  # @FilePath: /xiaomi-ax3600-openwrt-build/scripts/prepare.sh
 ###
 
-git clone https://github.com/zhkong/openwrt-ipq807x.git --single-branch openwrt --depth 1
+git clone -b xiaomi-ax3600-stock-layout https://github.com/jiayong1913/ZKopenwrt-ipq807x.git --single-branch openwrt --depth 1
+#git clone -b ax6-stock-layout https://github.com/jiayong1913/openwrt-ipq807x.git --single-branch openwrt --depth 1
 cd openwrt
 
 # 更新 Feeds
@@ -53,9 +54,11 @@ bash ../scripts/fix-argon-css.sh
 bash ../scripts/preset-terminal-tools.sh
 
 # config file
-cp ../config/xiaomi_ax3600-stock.config .config
-make defconfig
+#cp ../config/xiaomi_ax3600-stock.config .config
+#config file for ax6-stock configfile
+cp ../config/AX6-AX6NSS.config .config
+#make defconfig
 
 # # 编译固件
 # make download -j$(nproc)
-# make -j$(nproc) || make -j1 V=s
+# make -j$(nproc) || make -j8 V=s
